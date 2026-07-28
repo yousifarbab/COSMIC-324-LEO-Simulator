@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
+import time
 
 # إعدادات صفحة الويب
 st.set_page_config(
@@ -12,24 +13,32 @@ st.set_page_config(
 )
 
 # عنوان لوحة التحكم الرئيسية
-st.title("🛰️ COSMIC-324: Intelligent LEO & Direct-to-Cell Platform")
+st.title("🛰️ COSMIC-324: Autonomous LEO & Space-Weather Simulator")
 st.markdown("""
-Welcome to the next-generation intelligent dashboard of **COSMIC-324**. Featuring automated AI-like health monitoring, 
-Dynamic NTN link tracking, real-time KPIs, and instant enterprise reporting.
+Welcome to the cutting-edge autonomous simulation core of **COSMIC-324**. Featuring live playback engine, 
+Space Weather interference modeling, dynamic NTN link tracking, and smart system alerts.
 """)
 
-# شريط جانبي (Sidebar) للتحكم في معلمات المحاكاة المتقدمة
-st.sidebar.header("🎛️ Simulation Parameters")
+# شريط جانبي (Sidebar) للتحكم المتقدم والأفق الجديد
+st.sidebar.header("🎛️ Simulation Engine & Weather")
+sim_mode = st.sidebar.radio("Simulation Mode", ["Static Analysis", "Live Space Playback"])
+space_weather = st.sidebar.selectbox("Space Weather Condition", ["Clear Sky (Optimal)", "Solar Radiation Storm (Interference)"])
+
+st.sidebar.markdown("---")
+st.sidebar.header("⚙️ Orbital Parameters")
 time_steps = st.sidebar.slider("Simulation Time Steps", min_value=5, max_value=20, value=10, step=1)
 base_latency = st.sidebar.slider("Base Latency (ms)", min_value=2.0, max_value=5.0, value=3.7, step=0.1)
 growth_factor = st.sidebar.slider("Growth Rate Factor", min_value=0.01, max_value=0.1, value=0.05, step=0.01)
 elevation_threshold = st.sidebar.slider("Min Elevation Angle (°)", min_value=10, max_value=40, value=25, step=5)
 
+# تأثير الطقس الفضائي على التأخير وزاوية الارتفاع
+weather_penalty = 3.5 if "Storm" in space_weather else 0.0
+
 # حساب بيانات زمن التأخير وحالة الاتصال المباشر بالجوال (Direct-to-Cell)
 steps = np.arange(1, time_steps + 1)
-latencies = base_latency + (steps ** 1.2) * growth_factor * 2 
-elevations = 45 - (steps * 1.5)  # زاوية الارتفاع تقل كلما تحرك القمر
-connection_status = ["Connected (Active)" if el >= elevation_threshold else "Handover / Weak" for el in elevations]
+latencies = base_latency + (steps ** 1.2) * growth_factor * 2 + weather_penalty
+elevations = 45 - (steps * 1.5) if "Storm" in space_weather else 45 - (steps * 1.2)
+connection_status = ["Connected (Active)" if (el >= elevation_threshold and weather_penalty == 0) else "Storm Interrupted / Handover" for el in elevations]
 
 # حساب نسبة استقرار الشبكة
 active_ratio = (connection_status.count("Connected (Active)") / len(connection_status))
@@ -43,28 +52,40 @@ df_results = pd.DataFrame({
 })
 
 # 🚨 نظام التنبيه الذكي التلقائي (Smart System Alerts)
-if active_ratio == 1.0:
-    st.success("🟢 **Network Status Optimal:** All LEO satellites maintain strong Direct-to-Cell (NTN) line-of-sight links with zero handovers required.")
-elif active_ratio >= 0.7:
-    st.warning("⚠️ **Network Notice:** Moderate orbital degradation detected. Some time steps require satellite handover.")
+if space_weather == "Clear Sky (Optimal)" and active_ratio == 1.0:
+    st.success("🟢 **Network Status Optimal:** All LEO satellites maintain strong Direct-to-Cell (NTN) line-of-sight links.")
+elif "Storm" in space_weather:
+    st.error("⚡ **Space Weather Alert:** Solar Radiation Storm detected! Atmospheric drag and signal attenuation causing link degradation.")
 else:
-    st.error("🔴 **Critical Network Alert:** High latency and low elevation angles detected. Frequent handovers or signal drops occurring!")
+    st.warning("⚠️ **Network Notice:** Moderate orbital degradation detected. Handover recommended.")
 
 # 📊 قسم مؤشرات الأداء الرئيسية (KPI Metrics Cards)
-st.markdown("### 📌 Real-Time System KPIs & Health")
+st.markdown("### 📌 Real-Time System KPIs & Weather Impact")
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 with kpi1:
-    st.metric(label="Average Latency", value=f"{np.mean(latencies):.2f} ms", delta=f"{(latencies[-1]-latencies[0]):.2f} ms trend")
+    st.metric(label="Average Latency", value=f"{np.mean(latencies):.2f} ms", delta=f"+{weather_penalty} ms weather" if weather_penalty>0 else "Nominal")
 with kpi2:
     st.metric(label="Active LEO Satellites", value=min(max(int(time_steps / 2), 3), 6))
 with kpi3:
     st.metric(label="Min Elevation Angle", value=f"{np.min(elevations):.1f}°")
 with kpi4:
-    st.metric(label="Link Health Index", value=f"{active_ratio * 100:.0f}%", delta="Stable" if active_ratio >= 0.7 else "Degraded")
+    st.metric(label="Link Health Index", value=f"{active_ratio * 100:.0f}%", delta="Degraded" if weather_penalty>0 else "Stable")
 
 # شريط تقدم صحة الشبكة المرئي
 st.progress(active_ratio, text="Network Constellation Stability Index")
+
+# محاكاة التشغيل الحي (Live Playback Mode) إذا اختارها المستخدم
+if sim_mode == "Live Space Playback":
+    st.markdown("---")
+    st.info("▶️ **Live Playback Engine Active:** Simulating real-time satellite pass over ground mobile terminal...")
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    for i in range(100):
+        time.sleep(0.01)
+        progress_bar.progress(i + 1)
+    status_text.success("✅ Orbital pass telemetry successfully updated in real-time!")
 
 st.markdown("---")
 
@@ -72,11 +93,11 @@ st.markdown("---")
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("📈 Signal Latency & Elevation Evolution")
+    st.subheader("📈 Signal Latency & Space Weather Impact")
     
     fig, ax = plt.subplots(figsize=(6, 4))
-    ax.plot(steps, latencies, marker='o', linestyle='-', color='#1f77b4', linewidth=2, label='Latency (ms)')
-    ax.set_title("COSMIC-324: Latency Growth Over Time")
+    ax.plot(steps, latencies, marker='o', linestyle='-', color='#d62728' if weather_penalty>0 else '#1f77b4', linewidth=2, label='Latency (ms)')
+    ax.set_title("COSMIC-324: Latency with Weather Effects")
     ax.set_xlabel("Simulation Time Steps")
     ax.set_ylabel("Latency (ms)")
     ax.grid(True, linestyle='--', alpha=0.6)
@@ -99,7 +120,7 @@ with col2:
     fig_net, ax_net = plt.subplots(figsize=(6, 4))
     pos = nx.spring_layout(G, seed=42)
     
-    node_colors = ['#2ca02c' if node == mobile_device else '#1f77b4' for node in G.nodes()]
+    node_colors = ['#d62728' if weather_penalty>0 else '#2ca02c' for node in G.nodes()]
     
     nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=700, 
             font_size=8, font_color="white", font_weight="bold", ax=ax_net, edge_color='gray')
@@ -117,9 +138,9 @@ csv_data = df_results.to_csv(index=False).encode('utf-8')
 st.download_button(
     label="📥 Download Full Simulation Report (CSV)",
     data=csv_data,
-    file_name="COSMIC_324_Intelligent_Report.csv",
+    file_name="COSMIC_324_Autonomous_Report.csv",
     mime="text/csv",
 )
 
 st.markdown("---")
-st.success("🌟 **Intelligent Upgrade Deployed:** Automated system health alerts and stability progress tracking are now active!")
+st.success("🚀 **New Horizon Unlocked:** Live Space Weather simulation and Autonomous Playback Engine are fully active!")
