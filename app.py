@@ -13,10 +13,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# إعداد قاعدة البيانات المحلية مع دعم حقول الـ Handover والنطاق الجديد
+# إعداد قاعدة البيانات وتحديث الجدول تلقائياً ليناسب الأعمدة الجديدة
 def init_db():
     conn = sqlite3.connect('cosmic_simulations.db')
     c = conn.cursor()
+    # إنشاء الجدول إذا لم يكن موجوداً
     c.execute('''
         CREATE TABLE IF NOT EXISTS simulations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,6 +30,11 @@ def init_db():
             handovers_count INTEGER
         )
     ''')
+    # التأكد من إضافة عمود handovers_count إذا كان الجدول قديماً
+    try:
+        c.execute("ALTER TABLE simulations ADD COLUMN handovers_count INTEGER")
+    except sqlite3.OperationalError:
+        pass # العمود موجود مسبقاً فلا داعي لإضافته
     conn.commit()
     conn.close()
 
@@ -71,7 +77,7 @@ spectrum_band = st.sidebar.selectbox("Frequency Band", [
     "S-Band (Direct-to-Cell)", 
     "Ku-Band (Standard Broadband)", 
     "Ka-Band (High-Throughput HTS)",
-    "V-Band (6G Optical / Ultra-High Density)" # النطاق الجديد المضاف
+    "V-Band (6G Optical / Ultra-High Density)"
 ])
 space_weather = st.sidebar.selectbox("Space Weather Condition", ["Clear Sky (Optimal)", "Solar Radiation Storm (Interference)"])
 
@@ -82,7 +88,7 @@ base_latency = st.sidebar.slider("Base Latency (ms)", min_value=1.5, max_value=5
 growth_factor = st.sidebar.slider("Growth Rate Factor", min_value=0.01, max_value=0.1, value=0.04, step=0.01)
 elevation_threshold = st.sidebar.slider("Min Elevation Angle (°)", min_value=10, max_value=40, value=25, step=5)
 
-# خصائص النطاق الترددي (بما فيها V-Band الفائق)
+# خصائص النطاق الترددي
 if "S-Band" in spectrum_band:
     band_throughput = 5.0
     band_penalty = 0.5
@@ -94,11 +100,11 @@ elif "Ka-Band" in spectrum_band:
     band_penalty = 0.0
 else: # V-Band 6G
     band_throughput = 500.0
-    band_penalty = -0.3 # زيادة سرعة فائقة
+    band_penalty = -0.3
 
 weather_penalty = 4.0 if "Storm" in space_weather else 0.0
 
-# حساب البيانات والتحويل التلقائي (Handover Logic)
+# حساب البيانات والتحويل التلقائي
 steps = np.arange(1, time_steps + 1)
 latencies = base_latency + (steps ** 1.2) * growth_factor * 2 + weather_penalty + band_penalty
 elevations = 48 - (steps * 1.8) if "Storm" in space_weather else 48 - (steps * 1.1)
@@ -127,15 +133,28 @@ df_results = pd.DataFrame({
 
 # زر لحفظ الجلسة مع بيانات الـ Handover في قاعدة البيانات
 if st.button("💾 Save Simulation Run to Database"):
-    conn = sqlite3.connect('cosmic_simulations.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO simulations (username, timestamp, spectrum_band, space_weather, avg_latency, link_health, handovers_count) VALUES (?, ?, ?, ?, ?, ?, ?)",
-              (st.session_state.username, str(datetime.datetime.now()), spectrum_band, space_weather, float(np.mean(latencies)), float(active_ratio * 100), int(handovers_triggered)))
-    conn.commit()
-    conn.close()
-    st.success("Advanced simulation session & handover metrics successfully saved to secure database!")
+    try:
+        conn = sqlite3.connect('cosmic_simulations.db')
+        c = conn.cursor()
+        c.execute("""
+            INSERT INTO simulations (username, timestamp, spectrum_band, space_weather, avg_latency, link_health, handovers_count) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            str(st.session_state.username), 
+            str(datetime.datetime.now()), 
+            str(spectrum_band), 
+            str(space_weather), 
+            float(np.mean(latencies)), 
+            float(active_ratio * 100), 
+            int(handovers_triggered)
+        ))
+        conn.commit()
+        conn.close()
+        st.success("Advanced simulation session & handover metrics successfully saved to secure database!")
+    except Exception as e:
+        st.error(f"Database Error: {e}")
 
-# 🚨 التنبيهات الذكية
+# التنبيهات الذكية
 if "V-Band" in spectrum_band and space_weather == "Clear Sky (Optimal)":
     st.success(f"🚀 **6G V-Band Active:** Ultra-high capacity optical link established with minimal latency.")
 elif "Storm" in space_weather:
@@ -143,7 +162,7 @@ elif "Storm" in space_weather:
 else:
     st.info(f"ℹ️ **Spectrum Status ({spectrum_band}):** Cognitive resource allocation stable.")
 
-# 📊 مؤشرات الأداء الرئيسية (KPIs) متضمنة عداد الـ Handovers
+# مؤشرات الأداء الرئيسية (KPIs)
 st.markdown("### 📌 Advanced Enterprise KPIs & Telemetry")
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
@@ -183,8 +202,6 @@ with col2:
     for i in range(1, num_sats + 1):
         sat_name = f"LEO-SAT-{i}"
         G.add_node(sat_name, pos=(np.cos(i * 2 * np.pi / num_sats), np.sin(i * 2 * np.pi / num_sats)))
-        # ربط المحطة بالقمر النشط
-        edge_color = 'green' if i == 1 else 'gray'
         G.add_edge(terminal_name, sat_name, weight=round(latencies[i-1], 2))
 
     fig_net, ax_net = plt.subplots(figsize=(6, 4))
@@ -196,7 +213,7 @@ with col2:
 
 # قسم عرض السجلات المخزنة من قاعدة البيانات
 st.markdown("---")
-st.subheader("📂 Secure Database Logs ( včetně Handover Metrics)")
+st.subheader("📂 Secure Database Logs (including Handover Metrics)")
 try:
     conn = sqlite3.connect('cosmic_simulations.db')
     df_db = pd.read_sql_query("SELECT * FROM simulations", conn)
@@ -218,5 +235,5 @@ st.download_button(
     label="📥 Download Telemetry Report (CSV)",
     data=csv_data,
     file_name="COSMIC_324_6G_Telemetry_Report.csv",
-    mime="text/css" if False else "text/csv",
+    mime="text/csv",
 )
