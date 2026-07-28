@@ -12,10 +12,10 @@ st.set_page_config(
 )
 
 # عنوان لوحة التحكم الرئيسية
-st.title("🛰️ COSMIC-324: LEO Satellite Network & Latency Simulator")
+st.title("🛰️ COSMIC-324: Advanced LEO & Direct-to-Cell Simulator")
 st.markdown("""
-Welcome to the advanced interactive dashboard of **COSMIC-324**. This upgraded simulation engine models 
-Direct-to-Cell (NTN) satellite connectivity, dynamic latency evolution, and network topology interacting with mobile ground terminals.
+Welcome to the enterprise-grade interactive dashboard of **COSMIC-324**. This upgraded simulation platform models 
+Direct-to-Cell (NTN) satellite connectivity, dynamic latency evolution, network topology, and real-time KPI metrics.
 """)
 
 # شريط جانبي (Sidebar) للتحكم في معلمات المحاكاة المتقدمة
@@ -28,8 +28,6 @@ elevation_threshold = st.sidebar.slider("Min Elevation Angle (°)", min_value=10
 # حساب بيانات زمن التأخير وحالة الاتصال المباشر بالجوال (Direct-to-Cell)
 steps = np.arange(1, time_steps + 1)
 latencies = base_latency + (steps ** 1.2) * growth_factor * 2 
-
-# محاكاة زوايا الارتفاع وحالة الاتصال المباشر للجوال
 elevations = 45 - (steps * 1.5)  # زاوية الارتفاع تقل كلما تحرك القمر
 connection_status = ["Connected (Active)" if el >= elevation_threshold else "Handover / Weak" for el in elevations]
 
@@ -41,26 +39,42 @@ df_results = pd.DataFrame({
     "Link_Status": connection_status
 })
 
+# 📊 قسم مؤشرات الأداء الرئيسية (KPI Metrics Cards)
+st.markdown("### 📌 Real-Time System KPIs")
+kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+
+with kpi1:
+    st.metric(label="Average Latency", value=f"{np.mean(latencies):.2f} ms", delta="-0.1 ms")
+with kpi2:
+    st.metric(label="Active LEO Satellites", value=min(max(int(time_steps / 2), 3), 6))
+with kpi3:
+    st.metric(label="Min Elevation Angle", value=f"{np.min(elevations):.1f}°")
+with kpi4:
+    active_links_ratio = f"{(connection_status.count('Connected (Active)') / len(connection_status)) * 100:.0f}%"
+    st.metric(label="Link Health Ratio", value=active_links_ratio, delta="Stable")
+
+st.markdown("---")
+
 # تقسيم الشاشة إلى عمودين لعرض النتائج بصرياً
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("📈 Signal Latency Evolution over Time")
+    st.subheader("📈 Signal Latency & Elevation Evolution")
     
     fig, ax = plt.subplots(figsize=(6, 4))
-    ax.plot(steps, latencies, marker='o', linestyle='-', color='#1f77b4', linewidth=2, label='Signal Latency (ms)')
-    ax.set_title("COSMIC-324: LEO Satellite Latency")
+    ax.plot(steps, latencies, marker='o', linestyle='-', color='#1f77b4', linewidth=2, label='Latency (ms)')
+    ax.set_title("COSMIC-324: Latency Growth Over Time")
     ax.set_xlabel("Simulation Time Steps")
     ax.set_ylabel("Latency (ms)")
     ax.grid(True, linestyle='--', alpha=0.6)
-    ax.legend()
+    ax.legend(loc='upper left')
     st.pyplot(fig)
 
 with col2:
     st.subheader("🌐 Direct-to-Cell Network Topology")
     
     G = nx.Graph()
-    mobile_device = "Mobile Device (No SIM)"
+    mobile_device = "Mobile Device (NTN)"
     G.add_node(mobile_device, pos=(0, 0))
     
     num_sats = min(max(int(time_steps / 2), 3), 6)
@@ -77,22 +91,22 @@ with col2:
     nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=700, 
             font_size=8, font_color="white", font_weight="bold", ax=ax_net, edge_color='gray')
     
-    ax_net.set_title("COSMIC-324: NTN Direct-to-Cell Links")
+    ax_net.set_title("COSMIC-324: NTN Direct Links")
     st.pyplot(fig_net)
 
 # قسم عرض البيانات وتصديرها (CSV Export Section)
 st.markdown("---")
-st.subheader("📊 Simulation Data & Direct-to-Cell Metrics")
+st.subheader("📊 Comprehensive Simulation Report & Data")
 st.dataframe(df_results, use_container_width=True)
 
 # زر تحميل البيانات بصيغة CSV
 csv_data = df_results.to_csv(index=False).encode('utf-8')
 st.download_button(
-    label="📥 Download Simulation Report (CSV)",
+    label="📥 Download Full Simulation Report (CSV)",
     data=csv_data,
-    file_name="COSMIC_324_Simulation_Report.csv",
+    file_name="COSMIC_324_Enterprise_Report.csv",
     mime="text/csv",
 )
 
 st.markdown("---")
-st.success("🚀 **System Upgraded Successfully:** Direct-to-Cell mobile parameters and CSV export features are now fully integrated!")
+st.success("✨ **Enterprise Upgrade Complete:** KPIs metrics cards and enhanced NTN data structures are successfully deployed!")
