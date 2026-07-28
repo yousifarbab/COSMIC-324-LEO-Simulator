@@ -65,7 +65,7 @@ if st.sidebar.button("Log out"):
 
 st.sidebar.markdown("---")
 
-# 💳 قسم باقات الاشتراك والأسعار (ظاهر بوضوح في أعلى الشريط الجانبي)
+# 💳 قسم باقات الاشتراك والأسعار في أعلى الشريط الجانبي
 st.sidebar.header("💳 Subscription & Billing")
 user_tier = st.sidebar.selectbox("Select Your Plan", [
     "Starter Tier ($20/month - Basic S/Ku-Band)", 
@@ -88,7 +88,7 @@ Welcome back, **{st.session_state.username}**. You are operating the advanced **
 featuring cognitive multi-band allocation, space weather resilience, and automated LEO handover protocols.
 """)
 
-# شريط جانبي للتحكم المتقدم بالترددات
+# شريط جانبي للتحكم بالترددات
 st.sidebar.header("📡 Cognitive Spectrum & Weather")
 
 if "Starter" in user_tier:
@@ -232,7 +232,7 @@ with col2:
         G.add_node(sat_name, pos=(np.cos(i * 2 * np.pi / num_sats), np.sin(i * 2 * np.pi / num_sats)))
         G.add_edge(terminal_name, sat_name, weight=round(latencies[i-1], 2))
 
-    fig_net, ax_net = plt.subplots(figsize, (6, 4) if 'figsize' in locals() else (6,4)) # Safe handling
+    fig_net, ax_net = plt.subplots(figsize=(6, 4))
     pos = nx.spring_layout(G, seed=42)
     node_colors = ['#ff7f0e' if terminal_name in node else '#2ca02c' for node in G.nodes()]
     nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=750, font_size=8, font_color="white", font_weight="bold", ax=ax_net, edge_color='orange')
