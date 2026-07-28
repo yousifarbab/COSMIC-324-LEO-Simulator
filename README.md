@@ -28,3 +28,4 @@ The framework is built on a clean, modular Python architecture:
    ```bash
    git clone [https://github.com/YOUR_USERNAME/COSMIC-324-LEO-Simulator.git](https://github.com/YOUR_USERNAME/COSMIC-324-LEO-Simulator.git)
    cd COSMIC-324-LEO-Simulator
+![Simulation Output](latency_simulation_output.png)
