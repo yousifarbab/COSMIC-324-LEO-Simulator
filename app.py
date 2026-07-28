@@ -62,19 +62,19 @@ if st.sidebar.button("Log out"):
 
 st.sidebar.markdown("---")
 
-# 💼 قسم إدارة الاشتراكات بالأسعار الجديدة
+# 💳 قسم باقات الاشتراك والأسعار (ظاهر بوضوح في أعلى الشريط الجانبي)
 st.sidebar.header("💳 Subscription & Billing")
-user_tier = st.sidebar.selectbox("Your Current Plan", [
+user_tier = st.sidebar.selectbox("Select Your Plan", [
     "Starter Tier ($20/month - Basic S/Ku-Band)", 
     "Enterprise 6G Tier ($150/month - V-Band & DB Logs)"
 ])
 
 if "Starter" in user_tier:
-    st.sidebar.warning("⚠️ Starter tier restricts V-Band (6G) and database logs.")
+    st.sidebar.warning("⚠️ Starter tier restricts V-Band & database logs.")
     if st.sidebar.button("🚀 Upgrade to Enterprise 6G ($150/mo)"):
-        st.sidebar.success("Redirecting to secure payment gateway (Stripe)... [Demo Mode]")
+        st.sidebar.success("Redirecting to secure payment gateway... [Demo Mode]")
 else:
-    st.sidebar.success("🌟 Premium Enterprise 6G Plan Active ($150/mo)!")
+    st.sidebar.success("🌟 Premium Enterprise 6G Active ($150/mo)!")
 
 st.sidebar.markdown("---")
 
@@ -85,7 +85,7 @@ Welcome back, **{st.session_state.username}**. You are operating the advanced **
 featuring cognitive multi-band allocation, space weather resilience, and automated LEO handover protocols.
 """)
 
-# شريط جانبي للتحكم المتقدم
+# شريط جانبي للتحكم المتقدم بالترددات
 st.sidebar.header("📡 Cognitive Spectrum & Weather")
 
 if "Starter" in user_tier:
