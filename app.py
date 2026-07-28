@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
-import sqlite3
 import datetime
 
 # إعدادات صفحة الويب
@@ -12,34 +11,6 @@ st.set_page_config(
     page_icon="🛰️",
     layout="wide"
 )
-
-# إعداد قاعدة البيانات وتحديث الجدول تلقائياً
-def init_db():
-    try:
-        conn = sqlite3.connect('cosmic_simulations.db')
-        c = conn.cursor()
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS simulations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT,
-                timestamp TEXT,
-                spectrum_band TEXT,
-                space_weather TEXT,
-                avg_latency REAL,
-                link_health REAL,
-                handovers_count INTEGER
-            )
-        ''')
-        try:
-            c.execute("ALTER TABLE simulations ADD COLUMN handovers_count INTEGER")
-        except sqlite3.OperationalError:
-            pass
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print(f"DB Init Error: {e}")
-
-init_db()
 
 # 🔐 نظام تسجيل الدخول في الشريط الجانبي
 st.sidebar.title("🔐 Enterprise Portal")
@@ -69,13 +40,13 @@ st.sidebar.markdown("---")
 st.sidebar.header("💳 Subscription & Billing")
 user_tier = st.sidebar.selectbox("Select Your Plan", [
     "Starter Tier ($20/month - Basic S/Ku-Band)", 
-    "Enterprise 6G Tier ($150/month - V-Band & DB Logs)"
+    "Enterprise 6G Tier ($150/month - V-Band & Logs)"
 ])
 
 if "Starter" in user_tier:
-    st.sidebar.warning("⚠️ Starter tier restricts V-Band & database logs.")
+    st.sidebar.warning("⚠️ Starter tier restricts V-Band features.")
     if st.sidebar.button("🚀 Upgrade to Enterprise 6G ($150/mo)"):
-        st.sidebar.success("Redirecting to secure payment gateway... [Demo Mode]")
+        st.sidebar.success("Upgrade simulated successfully! [Demo]")
 else:
     st.sidebar.success("🌟 Premium Enterprise 6G Active ($150/mo)!")
 
@@ -85,7 +56,7 @@ st.sidebar.markdown("---")
 st.title("🛰️ COSMIC-324: Next-Gen NTN & 6G Spectrum Platform")
 st.markdown(f"""
 Welcome back, **{st.session_state.username}**. You are operating the advanced **COSMIC-324** core, 
-featuring cognitive multi-band allocation, space weather resilience, and automated LEO handover protocols.
+featuring cognitive multi-band allocation and automated LEO handover protocols.
 """)
 
 # شريط جانبي للتحكم بالترددات
@@ -96,7 +67,7 @@ if "Starter" in user_tier:
         "S-Band (Direct-to-Cell)", 
         "Ku-Band (Standard Broadband)"
     ])
-    st.sidebar.info("💡 Upgrade to Enterprise 6G ($150/mo) to unlock V-Band & Ka-Band.")
+    st.sidebar.info("💡 Upgrade to Enterprise 6G to unlock V-Band & Ka-Band.")
 else:
     spectrum_band = st.sidebar.selectbox("Frequency Band", [
         "S-Band (Direct-to-Cell)", 
@@ -124,13 +95,13 @@ elif "Ku-Band" in spectrum_band:
 elif "Ka-Band" in spectrum_band: 
     band_throughput = 150.0
     band_penalty = 0.0
-else: # V-Band 6G
+else: 
     band_throughput = 500.0
     band_penalty = -0.3
 
 weather_penalty = 4.0 if "Storm" in space_weather else 0.0
 
-# حساب البيانات والتحويل التلقائي
+# حساب البيانات
 steps = np.arange(1, time_steps + 1)
 latencies = base_latency + (steps ** 1.2) * growth_factor * 2 + weather_penalty + band_penalty
 elevations = 48 - (steps * 1.8) if "Storm" in space_weather else 48 - (steps * 1.1)
@@ -141,7 +112,7 @@ for el in elevations:
     if el >= elevation_threshold and weather_penalty == 0:
         connection_status.append("Connected (Active)")
     else:
-        connection_status.append("⚠️ Handover Executed (Switching Sat)")
+        connection_status.append("⚠️ Handover Executed")
         handovers_triggered += 1
 
 throughputs = [band_throughput * (1.0 - (i*0.015)) if weather_penalty == 0 else band_throughput * 0.25 for i in range(len(steps))]
@@ -156,39 +127,13 @@ df_results = pd.DataFrame({
     "Link_State_Protocol": connection_status
 })
 
-# زر لحفظ الجلسة
-if st.button("💾 Save Simulation Run to Database"):
-    if "Starter" in user_tier:
-        st.error("🔒 Saving to database is restricted to Enterprise 6G Subscribers ($150/mo). Please upgrade!")
-    else:
-        try:
-            conn = sqlite3.connect('cosmic_simulations.db')
-            c = conn.cursor()
-            c.execute("""
-                INSERT INTO simulations (username, timestamp, spectrum_band, space_weather, avg_latency, link_health, handovers_count) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                str(st.session_state.username), 
-                str(datetime.datetime.now()), 
-                str(spectrum_band), 
-                str(space_weather), 
-                float(np.mean(latencies)), 
-                float(active_ratio * 100), 
-                int(handovers_triggered)
-            ))
-            conn.commit()
-            conn.close()
-            st.success("Advanced simulation session & handover metrics successfully saved to secure database!")
-        except Exception as e:
-            st.error(f"Database Error: {e}")
-
 # التنبيهات الذكية
 if "V-Band" in spectrum_band and space_weather == "Clear Sky (Optimal)":
-    st.success(f"🚀 **6G V-Band Active:** Ultra-high capacity optical link established with minimal latency.")
+    st.success(f"🚀 **6G V-Band Active:** Ultra-high capacity optical link established.")
 elif "Storm" in space_weather:
-    st.error("⚡ **Space Weather Alert:** Solar radiation causing atmospheric attenuation. Handover protocols engaged.")
+    st.error("⚡ **Space Weather Alert:** Solar radiation causing atmospheric attenuation.")
 else:
-    st.info(f"ℹ️ **Spectrum Status ({spectrum_band}):** Cognitive resource allocation stable.")
+    st.info(f"ℹ️ **Spectrum Status ({spectrum_band}):** Resource allocation stable.")
 
 # مؤشرات الأداء الرئيسية (KPIs)
 st.markdown("### 📌 Advanced Enterprise KPIs & Telemetry")
@@ -203,58 +148,38 @@ with kpi3:
 with kpi4:
     st.metric(label="Link Health Index", value=f"{active_ratio * 100:.0f}%")
 
-st.progress(active_ratio, text="Constellation Link Integrity & Handover Efficiency")
+st.progress(active_ratio, text="Constellation Link Integrity & Efficiency")
 st.markdown("---")
 
 # الرسوم البيانية
 col1, col2 = st.columns(2)
 with col1:
-    st.subheader("📈 Latency & Spectrum Dynamics")
+    st.subheader("📈 Latency Dynamics")
     fig, ax = plt.subplots(figsize=(6, 4))
     color_scheme = '#d62728' if "V-Band" in spectrum_band else '#1f77b4'
-    ax.plot(steps, latencies, marker='s', linestyle='-', color=color_scheme, linewidth=2, label=f'{spectrum_band.split()[0]} Latency')
-    ax.set_title(f"COSMIC-324: {spectrum_band.split()[0]} Behavior")
-    ax.set_xlabel("Simulation Time Steps")
+    ax.plot(steps, latencies, marker='s', linestyle='-', color=color_scheme, linewidth=2, label=f'Latency')
+    ax.set_xlabel("Time Steps")
     ax.set_ylabel("Latency (ms)")
     ax.grid(True, linestyle='--', alpha=0.6)
-    ax.legend(loc='upper left')
     st.pyplot(fig)
 
 with col2:
-    st.subheader("🌐 Dynamic LEO Topology & Handover Nodes")
+    st.subheader("🌐 Handover Topology")
     G = nx.Graph()
-    terminal_name = "6G User / Terminal" if "V-Band" in spectrum_band else "Mobile NTN Device"
+    terminal_name = "6G Terminal" if "V-Band" in spectrum_band else "NTN Device"
     G.add_node(terminal_name, pos=(0, 0))
     
     num_sats = min(max(int(time_steps / 2), 3), 7)
     for i in range(1, num_sats + 1):
-        sat_name = f"LEO-SAT-{i}"
+        sat_name = f"SAT-{i}"
         G.add_node(sat_name, pos=(np.cos(i * 2 * np.pi / num_sats), np.sin(i * 2 * np.pi / num_sats)))
-        G.add_edge(terminal_name, sat_name, weight=round(latencies[i-1], 2))
+        G.add_edge(terminal_name, sat_name)
 
     fig_net, ax_net = plt.subplots(figsize=(6, 4))
     pos = nx.spring_layout(G, seed=42)
     node_colors = ['#ff7f0e' if terminal_name in node else '#2ca02c' for node in G.nodes()]
     nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=750, font_size=8, font_color="white", font_weight="bold", ax=ax_net, edge_color='orange')
-    ax_net.set_title("COSMIC-324: Active Handover Topology")
     st.pyplot(fig_net)
-
-# عرض السجلات المخزنة
-st.markdown("---")
-st.subheader("📂 Secure Database Logs (Enterprise Feature)")
-if "Starter" in user_tier:
-    st.warning("🔒 Database logs are locked in the Starter tier. Upgrade to Enterprise 6G ($150/mo) to view history.")
-else:
-    try:
-        conn = sqlite3.connect('cosmic_simulations.db')
-        df_db = pd.read_sql_query("SELECT * FROM simulations", conn)
-        conn.close()
-        if not df_db.empty:
-            st.dataframe(df_db, use_container_width=True)
-        else:
-            st.info("No saved simulations in database yet.")
-    except Exception as e:
-        st.write("Database table initializing...")
 
 # جدول البيانات والتحميل
 st.markdown("---")
@@ -265,6 +190,6 @@ csv_data = df_results.to_csv(index=False).encode('utf-8')
 st.download_button(
     label="📥 Download Telemetry Report (CSV)",
     data=csv_data,
-    file_name="COSMIC_324_6G_Telemetry_Report.csv",
+    file_name="COSMIC_324_Telemetry.csv",
     mime="text/csv",
 )
