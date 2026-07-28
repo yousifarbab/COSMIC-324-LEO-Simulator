@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🌐 نظام اللغات (Dictionary للترجمة الفورية)
+# 🌐 نظام اللغات الموسع (يشمل 5 لغات عالمية)
 translations = {
     "English": {
         "portal_title": "🔐 Enterprise Portal",
@@ -60,11 +60,86 @@ translations = {
         "status": "الحالة",
         "latency": "التأخير (مللي ثانية)",
         "active_link": "رابط نشط"
+    },
+    "Français": {
+        "portal_title": "🔐 Portail d'Entreprise",
+        "welcome": "Bienvenue",
+        "logout": "Déconnexion",
+        "login": "Connexion",
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "billing": "Abonnement et Facturation",
+        "select_plan": "Sélectionnez votre offre",
+        "starter_desc": "Offre Starter (20$/mois - S/Ku-Band)",
+        "enterprise_desc": "Offre Enterprise 6G (150$/mois - V-Band)",
+        "starter_warn": "⚠️ L'offre Starter limite les fonctionnalités V-Band.",
+        "upgrade_btn": "🚀 Passer à Enterprise 6G (150$/mois)",
+        "upgrade_success": "Mise à niveau simulée avec succès !",
+        "active_prem": "🌟 Enterprise 6G Actif (150$/mois) !",
+        "parameters": "📡 Paramètres",
+        "time_steps": "Étapes de simulation",
+        "main_title": "🛰️ COSMIC-324: Plateforme NTN & Spectre 6G",
+        "operating_normal": "Système opérationnel avec allocation multi-bandes.",
+        "telemetry": "📊 Rapport de Télémétrie en Direct",
+        "step": "Étape",
+        "status": "Statut",
+        "latency": "Latence (ms)",
+        "active_link": "Lien Actif"
+    },
+    "Español": {
+        "portal_title": "🔐 Portal Empresarial",
+        "welcome": "Bienvenido",
+        "logout": "Cerrar sesión",
+        "login": "Iniciar sesión",
+        "username": "Usuario",
+        "password": "Contraseña",
+        "billing": "Suscripción y Facturación",
+        "select_plan": "Selecciona tu plan",
+        "starter_desc": "Nivel Starter ($20/mes - S/Ku-Band)",
+        "enterprise_desc": "Nivel Enterprise 6G ($150/mes - V-Band)",
+        "starter_warn": "⚠️ El nivel Starter limita las funciones de V-Band.",
+        "upgrade_btn": "🚀 Actualizar a Enterprise 6G ($150/mes)",
+        "upgrade_success": "¡Actualización simulada con éxito!",
+        "active_prem": "🌟 ¡Enterprise 6G Activo ($150/mes)!",
+        "parameters": "📡 Parámetros",
+        "time_steps": "Pasos de Simulación",
+        "main_title": "🛰️ COSMIC-324: Plataforma NTN y Espectro 6G",
+        "operating_normal": "Sistema operando normalmente con asignación multibanda.",
+        "telemetry": "📊 Reporte de Telemetría en Vivo",
+        "step": "Paso",
+        "status": "Estado",
+        "latency": "Latencia (ms)",
+        "active_link": "Enlace Activo"
+    },
+    "Deutsch": {
+        "portal_title": "🔐 Unternehmensportal",
+        "welcome": "Willkommen",
+        "logout": "Abmelden",
+        "login": "Anmelden",
+        "username": "Benutzername",
+        "password": "Passwort",
+        "billing": "Abonnement & Abrechnung",
+        "select_plan": "Wählen Sie Ihren Plan",
+        "starter_desc": "Starter-Tarif ($20/Monat - S/Ku-Band)",
+        "enterprise_desc": "Enterprise 6G-Tarif ($150/Monat - V-Band)",
+        "starter_warn": "⚠️ Der Starter-Tarif schränkt V-Band ein.",
+        "upgrade_btn": "🚀 Auf Enterprise 6G upgraden ($150/Mo)",
+        "upgrade_success": "Upgrade erfolgreich simuliert!",
+        "active_prem": "🌟 Premium Enterprise 6G Aktiv ($150/Mo)!",
+        "parameters": "📡 Parameter",
+        "time_steps": "Simulationsschritte",
+        "main_title": "🛰️ COSMIC-324: Next-Gen NTN & 6G Plattform",
+        "operating_normal": "System arbeitet normal mit kognitiver Mehrbandzuweisung.",
+        "telemetry": "📊 Live-Telemetriebericht",
+        "step": "Schritt",
+        "status": "Status",
+        "latency": "Latenz (ms)",
+        "active_link": "Aktive Verbindung"
     }
 }
 
-# 🌍 اختيار اللغة في أعلى الشريط الجانبي
-selected_lang = st.sidebar.selectbox("🌐 Choose Language / اختر اللغة", ["English", "العربية"])
+# 🌍 اختيار اللغة من القائمة المنسدلة
+selected_lang = st.sidebar.selectbox("🌐 Choose Language / اختر اللغة", ["English", "العربية", "Français", "Español", "Deutsch"])
 t = translations[selected_lang]
 
 # الشريط الجانبي لتسجيل الدخول
@@ -92,14 +167,14 @@ if st.sidebar.button(t["logout"]):
 
 st.sidebar.markdown("---")
 
-# 💳 الأسعار والباقات مع دعم اللغات
+# 💳 الأسعار والباقات مع دعم اللغات المتعددة
 st.sidebar.header(t["billing"])
 user_tier = st.sidebar.selectbox(t["select_plan"], [
     t["starter_desc"], 
     t["enterprise_desc"]
 ])
 
-if "Starter" in user_tier or "الأساسية" in user_tier:
+if "Starter" in user_tier or "Offre Starter" in user_tier or "Nivel Starter" in user_tier or "Starter-Tarif" in user_tier or "الباقة الأساسية" in user_tier:
     st.sidebar.warning(t["starter_warn"])
     if st.sidebar.button(t["upgrade_btn"]):
         st.sidebar.success(t["upgrade_success"])
