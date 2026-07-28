@@ -1,7 +1,10 @@
 import streamlit as st
 
 # إعدادات الصفحة
-st.set_page_title_config(page_title="COSMIC-324 Secure", page_icon="🔐")
+import streamlit as st
+
+# إعدادات الصفحة (التعديل هنا)
+st.set_page_config(page_title="COSMIC-324 Secure", page_icon="🔐")
 
 # دالة التحقق من تسجيل الدخول
 def check_password():
