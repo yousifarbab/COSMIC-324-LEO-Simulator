@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# دالة التحقق من كلمة المرور الأولى (النافذة الآمنة)
+# دالة التحقق من كلمة المرور (القفل الوحيد المعتمد)
 def check_password():
     def password_entered():
         u = st.session_state.get("username", "").strip().lower()
@@ -38,18 +38,14 @@ def check_password():
     else:
         return True
 
-# تفعيل تطبيق الحماية قبل تشغيل أي شيء
+# تفعيل نظام الحماية أولاً
 if check_password():
 
     # 🌐 نظام اللغات الموسع (يشمل 5 لغات عالمية)
     translations = {
         "English": {
-            "portal_title": "🔐 Enterprise Portal",
             "welcome": "Welcome",
             "logout": "Log out",
-            "login": "Login",
-            "username": "Username",
-            "password": "Password",
             "billing": "Subscription & Billing",
             "select_plan": "Select Your Plan",
             "starter_desc": "Starter Tier ($20/month - Basic S/Ku-Band)",
@@ -69,12 +65,8 @@ if check_password():
             "active_link": "Active Link"
         },
         "العربية": {
-            "portal_title": "🔐 بوابة المؤسسة",
             "welcome": "أهلاً بك",
             "logout": "تسجيل خروج",
-            "login": "تسجيل الدخول",
-            "username": "اسم المستخدم",
-            "password": "كلمة المرور",
             "billing": "الاشتراكات والفوترة",
             "select_plan": "اختر باقتك",
             "starter_desc": "الباقة الأساسية ($20/شهرياً - S/Ku-Band)",
@@ -94,12 +86,8 @@ if check_password():
             "active_link": "رابط نشط"
         },
         "Français": {
-            "portal_title": "🔐 Portail d'Entreprise",
             "welcome": "Bienvenue",
             "logout": "Déconnexion",
-            "login": "Connexion",
-            "username": "Nom d'utilisateur",
-            "password": "Mot de passe",
             "billing": "Abonnement et Facturation",
             "select_plan": "Sélectionnez votre offre",
             "starter_desc": "Offre Starter (20$/mois - S/Ku-Band)",
@@ -119,12 +107,8 @@ if check_password():
             "active_link": "Lien Actif"
         },
         "Español": {
-            "portal_title": "🔐 Portal Empresarial",
             "welcome": "Bienvenido",
             "logout": "Cerrar sesión",
-            "login": "Iniciar sesión",
-            "username": "Usuario",
-            "password": "Contraseña",
             "billing": "Suscripción y Facturación",
             "select_plan": "Selecciona tu plan",
             "starter_desc": "Nivel Starter ($20/mes - S/Ku-Band)",
@@ -144,12 +128,8 @@ if check_password():
             "active_link": "Enlace Activo"
         },
         "Deutsch": {
-            "portal_title": "🔐 Unternehmensportal",
             "welcome": "Willkommen",
             "logout": "Abmelden",
-            "login": "Anmelden",
-            "username": "Benutzername",
-            "password": "Passwort",
             "billing": "Abonnement & Abrechnung",
             "select_plan": "Wählen Sie Ihren Plan",
             "starter_desc": "Starter-Tarif ($20/Monat - S/Ku-Band)",
@@ -170,36 +150,20 @@ if check_password():
         }
     }
 
-    # 🌍 اختيار اللغة من القائمة المنسدلة
+    # 🌍 اختيار اللغة من القائمة المنسدلة في الشريط الجانبي
     selected_lang = st.sidebar.selectbox("🌐 Choose Language / اختر اللغة", ["English", "العربية", "Français", "Español", "Deutsch"])
     t = translations[selected_lang]
 
-    # الشريط الجانبي لتسجيل الدخول الداخلي أو الترحيب بالمستخدم
-    st.sidebar.title(t["portal_title"])
-
-    if 'logged_in' not in st.session_state:
-        st.session_state.logged_in = False
-
-    if not st.session_state.logged_in:
-        user = st.sidebar.text_input(t["username"], value="Engineer")
-        pwd = st.sidebar.text_input(t["password"], type="password")
-        if st.sidebar.button(t["login"]):
-            if user and pwd:
-                st.session_state.logged_in = True
-                st.session_state.username = user
-                st.rerun()
-            else:
-                st.sidebar.error("Please enter credentials.")
-        st.stop()
-
-    st.sidebar.success(f"{t['welcome']}, {st.session_state.get('username', 'Engineer')}!")
+    st.sidebar.success(f"{t['welcome']}, Engineer!")
+    
+    # زر تسجيل الخروج من نظام الحماية الرئيسي
     if st.sidebar.button(t["logout"]):
-        st.session_state.logged_in = False
+        del st.session_state["password_correct"]
         st.rerun()
 
     st.sidebar.markdown("---")
 
-    # 💳 الأسعار والباقات مع دعم اللغات المتعددة
+    # 💳 الأسعار والباقات
     st.sidebar.header(t["billing"])
     user_tier = st.sidebar.selectbox(t["select_plan"], [
         t["starter_desc"], 
@@ -217,9 +181,9 @@ if check_password():
     st.sidebar.header(t["parameters"])
     time_steps = st.sidebar.slider(t["time_steps"], 5, 20, 10)
 
-    # الواجهة الرئيسية
+    # الواجهة الرئيسية للمشروع
     st.title(t["main_title"])
-    st.write(f"{t['welcome']} **{st.session_state.get('username', 'Engineer')}**. {t['operating_normal']}")
+    st.write(f"{t['welcome']} **Engineer**. {t['operating_normal']}")
 
     # جدول البيانات والقياس عن بعد
     steps = np.arange(1, time_steps + 1)
