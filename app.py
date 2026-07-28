@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # إعدادات الصفحة الأساسية
 st.set_page_config(
@@ -9,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# دالة التحقق من كلمة المرور (القفل الوحيد المعتمد)
+# دالة التحقق من كلمة المرور (القفل المعتمد)
 def check_password():
     def password_entered():
         u = st.session_state.get("username", "").strip().lower()
@@ -41,7 +42,7 @@ def check_password():
 # تفعيل نظام الحماية أولاً
 if check_password():
 
-    # 🌐 نظام اللغات الموسع (يشمل 5 لغات عالمية)
+    # 🌐 نظام اللغات الموسع
     translations = {
         "English": {
             "welcome": "Welcome",
@@ -59,6 +60,7 @@ if check_password():
             "main_title": "🛰️ COSMIC-324: Next-Gen NTN & 6G Spectrum Platform",
             "operating_normal": "System operating normally with cognitive multi-band allocation.",
             "telemetry": "📊 Live Telemetry Report",
+            "charts": "📈 Signal & Latency Analysis Charts",
             "step": "Step",
             "status": "Status",
             "latency": "Latency (ms)",
@@ -80,6 +82,7 @@ if check_password():
             "main_title": "🛰️ COSMIC-324: منصة طيف الجيل السادس والأقمار الصناعية",
             "operating_normal": "النظام يعمل بشكل طبيعي مع التخصيص المعرفي متعدد النطاقات.",
             "telemetry": "📊 تقرير القياس عن بعد المباشر",
+            "charts": "📈 رسومات تحليل الإشارة والتأخير",
             "step": "الخطوة",
             "status": "الحالة",
             "latency": "التأخير (مللي ثانية)",
@@ -101,6 +104,7 @@ if check_password():
             "main_title": "🛰️ COSMIC-324: Plateforme NTN & Spectre 6G",
             "operating_normal": "Système opérationnel avec allocation multi-bandes.",
             "telemetry": "📊 Rapport de Télémétrie en Direct",
+            "charts": "📈 Graphiques d'analyse du signal",
             "step": "Étape",
             "status": "Statut",
             "latency": "Latence (ms)",
@@ -122,6 +126,7 @@ if check_password():
             "main_title": "🛰️ COSMIC-324: Plataforma NTN y Espectro 6G",
             "operating_normal": "Sistema operando normalmente con asignación multibanda.",
             "telemetry": "📊 Reporte de Telemetría en Vivo",
+            "charts": "📈 Gráficos de Análisis de Señal",
             "step": "Paso",
             "status": "Estado",
             "latency": "Latencia (ms)",
@@ -143,6 +148,7 @@ if check_password():
             "main_title": "🛰️ COSMIC-324: Next-Gen NTN & 6G Plattform",
             "operating_normal": "System arbeitet normal mit kognitiver Mehrbandzuweisung.",
             "telemetry": "📊 Live-Telemetriebericht",
+            "charts": "📈 Signal- und Latenzanalyse-Diagramme",
             "step": "Schritt",
             "status": "Status",
             "latency": "Latenz (ms)",
@@ -150,20 +156,19 @@ if check_password():
         }
     }
 
-    # 🌍 اختيار اللغة من القائمة المنسدلة في الشريط الجانبي
+    # الشريط الجانبي واختيار اللغة
     selected_lang = st.sidebar.selectbox("🌐 Choose Language / اختر اللغة", ["English", "العربية", "Français", "Español", "Deutsch"])
     t = translations[selected_lang]
 
     st.sidebar.success(f"{t['welcome']}, Engineer!")
     
-    # زر تسجيل الخروج من نظام الحماية الرئيسي
     if st.sidebar.button(t["logout"]):
         del st.session_state["password_correct"]
         st.rerun()
 
     st.sidebar.markdown("---")
 
-    # 💳 الأسعار والباقات
+    # الباقات والفوترة
     st.sidebar.header(t["billing"])
     user_tier = st.sidebar.selectbox(t["select_plan"], [
         t["starter_desc"], 
@@ -185,13 +190,30 @@ if check_password():
     st.title(t["main_title"])
     st.write(f"{t['welcome']} **Engineer**. {t['operating_normal']}")
 
-    # جدول البيانات والقياس عن بعد
+    # توليد بيانات المحاكاة
     steps = np.arange(1, time_steps + 1)
+    latency_values = np.round(np.linspace(2.1, 4.3, len(steps)), 2)
+
     df = pd.DataFrame({
         t["step"]: steps,
         t["status"]: [t["active_link"]] * len(steps),
-        t["latency"]: np.round(np.linspace(2.1, 4.3, len(steps)), 2)
+        t["latency"]: latency_values
     })
 
+    # عرض جدول القياس عن بعد
     st.subheader(t["telemetry"])
     st.dataframe(df, use_container_width=True)
+
+    # إرجاع الرسوم البيانية وتحليل الجهاز
+    st.subheader(t["charts"])
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.plot(steps, latency_values, marker='o', color='#00d2ff', linewidth=2, label=t["latency"])
+    ax.set_facecolor('#0e1117')
+    fig.patch.set_facecolor('#0e1117')
+    ax.tick_params(colors='white')
+    ax.xaxis.label.set_color('white')
+    ax.yaxis.label.set_color('white')
+    ax.title.set_color('white')
+    ax.grid(True, linestyle='--', alpha=0.3)
+    ax.legend()
+    st.pyplot(fig)
