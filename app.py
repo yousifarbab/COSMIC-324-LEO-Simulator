@@ -15,30 +15,33 @@ st.set_page_config(
 
 # إعداد قاعدة البيانات وتحديث الجدول تلقائياً
 def init_db():
-    conn = sqlite3.connect('cosmic_simulations.db')
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS simulations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            timestamp TEXT,
-            spectrum_band TEXT,
-            space_weather TEXT,
-            avg_latency REAL,
-            link_health REAL,
-            handovers_count INTEGER
-        )
-    ''')
     try:
-        c.execute("ALTER TABLE simulations ADD COLUMN handovers_count INTEGER")
-    except sqlite3.OperationalError:
-        pass
-    conn.commit()
-    conn.close()
+        conn = sqlite3.connect('cosmic_simulations.db')
+        c = conn.cursor()
+        c.execute('''
+            CREATE TABLE IF NOT EXISTS simulations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                timestamp TEXT,
+                spectrum_band TEXT,
+                space_weather TEXT,
+                avg_latency REAL,
+                link_health REAL,
+                handovers_count INTEGER
+            )
+        ''')
+        try:
+            c.execute("ALTER TABLE simulations ADD COLUMN handovers_count INTEGER")
+        except sqlite3.OperationalError:
+            pass
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"DB Init Error: {e}")
 
 init_db()
 
-# 🔐 نظام تسجيل الدخول المبسط
+# 🔐 نظام تسجيل الدخول في الشريط الجانبي
 st.sidebar.title("🔐 Enterprise Portal")
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
@@ -229,7 +232,7 @@ with col2:
         G.add_node(sat_name, pos=(np.cos(i * 2 * np.pi / num_sats), np.sin(i * 2 * np.pi / num_sats)))
         G.add_edge(terminal_name, sat_name, weight=round(latencies[i-1], 2))
 
-    fig_net, ax_net = plt.subplots(figsize=(6, 4))
+    fig_net, ax_net = plt.subplots(figsize, (6, 4) if 'figsize' in locals() else (6,4)) # Safe handling
     pos = nx.spring_layout(G, seed=42)
     node_colors = ['#ff7f0e' if terminal_name in node else '#2ca02c' for node in G.nodes()]
     nx.draw(G, pos, with_labels=True, node_color=node_colors, node_size=750, font_size=8, font_color="white", font_weight="bold", ax=ax_net, edge_color='orange')
