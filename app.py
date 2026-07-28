@@ -12,10 +12,10 @@ st.set_page_config(
 )
 
 # عنوان لوحة التحكم الرئيسية
-st.title("🛰️ COSMIC-324: Advanced LEO & Direct-to-Cell Simulator")
+st.title("🛰️ COSMIC-324: Intelligent LEO & Direct-to-Cell Platform")
 st.markdown("""
-Welcome to the enterprise-grade interactive dashboard of **COSMIC-324**. This upgraded simulation platform models 
-Direct-to-Cell (NTN) satellite connectivity, dynamic latency evolution, network topology, and real-time KPI metrics.
+Welcome to the next-generation intelligent dashboard of **COSMIC-324**. Featuring automated AI-like health monitoring, 
+Dynamic NTN link tracking, real-time KPIs, and instant enterprise reporting.
 """)
 
 # شريط جانبي (Sidebar) للتحكم في معلمات المحاكاة المتقدمة
@@ -31,6 +31,9 @@ latencies = base_latency + (steps ** 1.2) * growth_factor * 2
 elevations = 45 - (steps * 1.5)  # زاوية الارتفاع تقل كلما تحرك القمر
 connection_status = ["Connected (Active)" if el >= elevation_threshold else "Handover / Weak" for el in elevations]
 
+# حساب نسبة استقرار الشبكة
+active_ratio = (connection_status.count("Connected (Active)") / len(connection_status))
+
 # بناء جدول البيانات لتصديره لاحقاً
 df_results = pd.DataFrame({
     "Time_Step": steps,
@@ -39,19 +42,29 @@ df_results = pd.DataFrame({
     "Link_Status": connection_status
 })
 
+# 🚨 نظام التنبيه الذكي التلقائي (Smart System Alerts)
+if active_ratio == 1.0:
+    st.success("🟢 **Network Status Optimal:** All LEO satellites maintain strong Direct-to-Cell (NTN) line-of-sight links with zero handovers required.")
+elif active_ratio >= 0.7:
+    st.warning("⚠️ **Network Notice:** Moderate orbital degradation detected. Some time steps require satellite handover.")
+else:
+    st.error("🔴 **Critical Network Alert:** High latency and low elevation angles detected. Frequent handovers or signal drops occurring!")
+
 # 📊 قسم مؤشرات الأداء الرئيسية (KPI Metrics Cards)
-st.markdown("### 📌 Real-Time System KPIs")
+st.markdown("### 📌 Real-Time System KPIs & Health")
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 with kpi1:
-    st.metric(label="Average Latency", value=f"{np.mean(latencies):.2f} ms", delta="-0.1 ms")
+    st.metric(label="Average Latency", value=f"{np.mean(latencies):.2f} ms", delta=f"{(latencies[-1]-latencies[0]):.2f} ms trend")
 with kpi2:
     st.metric(label="Active LEO Satellites", value=min(max(int(time_steps / 2), 3), 6))
 with kpi3:
     st.metric(label="Min Elevation Angle", value=f"{np.min(elevations):.1f}°")
 with kpi4:
-    active_links_ratio = f"{(connection_status.count('Connected (Active)') / len(connection_status)) * 100:.0f}%"
-    st.metric(label="Link Health Ratio", value=active_links_ratio, delta="Stable")
+    st.metric(label="Link Health Index", value=f"{active_ratio * 100:.0f}%", delta="Stable" if active_ratio >= 0.7 else "Degraded")
+
+# شريط تقدم صحة الشبكة المرئي
+st.progress(active_ratio, text="Network Constellation Stability Index")
 
 st.markdown("---")
 
@@ -104,9 +117,9 @@ csv_data = df_results.to_csv(index=False).encode('utf-8')
 st.download_button(
     label="📥 Download Full Simulation Report (CSV)",
     data=csv_data,
-    file_name="COSMIC_324_Enterprise_Report.csv",
+    file_name="COSMIC_324_Intelligent_Report.csv",
     mime="text/csv",
 )
 
 st.markdown("---")
-st.success("✨ **Enterprise Upgrade Complete:** KPIs metrics cards and enhanced NTN data structures are successfully deployed!")
+st.success("🌟 **Intelligent Upgrade Deployed:** Automated system health alerts and stability progress tracking are now active!")
