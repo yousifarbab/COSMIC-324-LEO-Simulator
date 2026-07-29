@@ -29,11 +29,14 @@ translations = {
         "active_prem": "🌟 Premium Enterprise 6G Active ($150/mo)!",
         "cognitive_weather": "📡 Cognitive Spectrum & Weather",
         "weather_status": "☀️ Hot days ahead: 35°C",
+        "jamming_title": "⚡ Spectrum Jamming Simulator",
+        "inject_jamming": "🚨 Inject Intentional Jamming / Interference",
         "parameters": "⚙️ Simulation Parameters",
         "time_steps": "Simulation Time Steps",
         "main_title": "🛰️ COSMIC-324: Next-Gen NTN & 6G Spectrum Platform",
         "operating_normal": "Welcome back, Engineer. You are operating the advanced COSMIC-324 core, featuring cognitive multi-band allocation.",
-        "spectrum_status": "Spectrum Status (S-Band (Direct-to-Cell)): Resource allocation stable.",
+        "spectrum_normal": "Spectrum Status (S-Band (Direct-to-Cell)): Resource allocation stable.",
+        "spectrum_jammed": "⚠️ ALERT: Spectrum Jamming Detected! Cognitive core automatically rerouting to secure V-Band frequencies.",
         "kpi_title": "📌 Advanced Enterprise KPIs & Telemetry",
         "avg_latency": "Average Latency",
         "throughput": "Est. Throughput",
@@ -65,11 +68,14 @@ translations = {
         "active_prem": "🌟 باقة المؤسسات 6G المميزة مفعلة ($150/شهرياً)!",
         "cognitive_weather": "📡 الطيف المعرفي والطقس الفضائي",
         "weather_status": "☀️ أيام حارة قادمة: 35°C",
+        "jamming_title": "⚡ محاكي التشويش الطيفي",
+        "inject_jamming": "🚨 حقن تشويش / تداخل متعمد",
         "parameters": "⚙️ معلمات المحاكاة",
         "time_steps": "خطوات محاكاة الوقت",
         "main_title": "🛰️ COSMIC-324: منصة طيف الجيل السادس والأقمار الصناعية",
         "operating_normal": "أهلاً بعودتك، مهندس. أنت تشغل نواة COSMIC-324 المتقدمة مع التخصيص المعرفي متعدد النطاقات.",
-        "spectrum_status": "حالة الطيف (S-Band المباشر للخلايا): تخصيص الموارد مستقر.",
+        "spectrum_normal": "حالة الطيف (S-Band المباشر للخلايا): تخصيص الموارد مستقر.",
+        "spectrum_jammed": "⚠️ تنبيه: تم رصد تشويش طيفي! النواة المعرفية تقوم تلقائياً بتحويل المسار إلى ترددات V-Band الآمنة.",
         "kpi_title": "📌 مؤشرات الأداء المتقدمة للمؤسسات والقياس عن بعد",
         "avg_latency": "متوسط التأخير",
         "throughput": "إنتاجية النطاق المقدرة",
@@ -135,6 +141,11 @@ st.sidebar.markdown("---")
 st.sidebar.header(t["cognitive_weather"])
 st.sidebar.info(t["weather_status"])
 
+# ⚡ قسم محاكي التشويش الطيفي الجديد (الأولوية الثالثة)
+st.sidebar.markdown("---")
+st.sidebar.header(t["jamming_title"])
+is_jammed = st.sidebar.checkbox(t["inject_jamming"], value=False)
+
 st.sidebar.markdown("---")
 st.sidebar.header(t["parameters"])
 time_steps = st.sidebar.slider(t["time_steps"], 5, 20, 10)
@@ -143,38 +154,49 @@ time_steps = st.sidebar.slider(t["time_steps"], 5, 20, 10)
 st.title(t["main_title"])
 st.write(t["operating_normal"])
 
-# حالة الطيف
-st.info(t["spectrum_status"])
+# حالة الطيف التفاعلية بناءً على التشويش
+if is_jammed:
+    st.error(t["spectrum_jammed"])
+    current_latency = "12.85 ms (Rerouted)"
+    current_throughput = "1.2 Mbps (Degraded)"
+    progress_val = 45
+else:
+    st.info(t["spectrum_normal"])
+    current_latency = "3.64 ms"
+    current_throughput = "4.7 Mbps"
+    progress_val = 88
 
 # مؤشرات الأداء المتقدمة (KPIs)
 st.subheader(t["kpi_title"])
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.metric(label=t["avg_latency"], value="3.64 ms")
+    st.metric(label=t["avg_latency"], value=current_latency)
 with col2:
-    st.metric(label=t["throughput"], value="4.7 Mbps")
+    st.metric(label=t["throughput"], value=current_throughput)
 with col3:
-    st.metric(label=t["handovers"], value="0 Events")
+    st.metric(label=t["handovers"], value="1 Event" if is_jammed else "0 Events")
 
-st.progress(88, text=t["efficiency"])
+st.progress(progress_val, text=t["efficiency"])
 
 # قسم الرسوم والمخططات الديناميكية
 col_a, col_b = st.columns(2)
 with col_a:
     st.subheader(t["latency_dynamics"])
-    chart_data = pd.DataFrame(np.random.randn(20, 1) / 5 + 3.6, columns=["Latency"])
+    multiplier = 3.5 if is_jammed else 0.2
+    chart_data = pd.DataFrame(np.random.randn(20, 1) * multiplier + (10 if is_jammed else 3.6), columns=["Latency"])
     st.line_chart(chart_data)
 
 with col_b:
     st.subheader(t["handover_top"])
-    st.bar_chart(pd.DataFrame([10, 25, 15, 30], columns=["Value"]))
+    st.bar_chart(pd.DataFrame([10, 25 if not is_jammed else 45, 15, 30], columns=["Value"]))
 
 # جدول القياس عن بعد المباشر
 steps = np.arange(1, time_steps + 1)
+lat_values = np.linspace(11.0, 14.2, len(steps)) if is_jammed else np.linspace(3.1, 4.2, len(steps))
 df = pd.DataFrame({
     t["step"]: steps,
-    t["status"]: [t["active_link"]] * len(steps),
-    "Latency (ms)": np.round(np.linspace(3.1, 4.2, len(steps)), 2)
+    t["status"]: ["Rerouted (V-Band)" if is_jammed else t["active_link"]] * len(steps),
+    "Latency (ms)": np.round(lat_values, 2)
 })
 
 st.subheader(t["telemetry"])
@@ -194,11 +216,21 @@ st.markdown("---")
 # 🖥️ سجل أحداث النظام الحية (Real-Time System Event Logs)
 st.subheader(t["system_logs"])
 current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-log_container = st.container()
-with log_container:
-    st.code(f"""
+
+if is_jammed:
+    log_content = f"""
+[{current_time}] [CRITICAL] Intentional Spectrum Jamming injected into primary S-Band!
+[{current_time}] [WARNING] Signal-to-Noise Ratio (SNR) dropped significantly.
+[{current_time}] [COGNITIVE CORE] Activating emergency cognitive recovery protocol...
+[{current_time}] [SUCCESS] Successfully migrated traffic to resilient V-Band frequencies. Link restored.
+    """
+else:
+    log_content = f"""
 [{current_time}] [INFO] COSMIC-324 Core initialized successfully.
 [{current_time}] [INFO] User authenticated: {st.session_state.username} | Active Tier: {user_tier}
 [{current_time}] [SUCCESS] Cognitive Multi-Band Allocation active on S-Band & Ku-Band.
 [{current_time}] [MONITOR] Telemetry stream stable. Zero packet loss detected across {time_steps} steps.
-    """, language="text")
+    """
+
+with st.container():
+    st.code(log_content, language="text")
