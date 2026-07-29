@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 🌐 نظام اللغات الشامل
+# 🌐 نظام اللغات الخماسي الشامل (الإنجليزية، العربية، الإسبانية، الألمانية، الفرنسية)
 translations = {
     "English": {
         "portal_title": "🔐 Enterprise Portal",
@@ -89,11 +89,128 @@ translations = {
         "active_link": "رابط نشط",
         "export_btn": "📥 تصدير تقرير القياس (CSV)",
         "system_logs": "🖥️ سجل أحداث النظام الحية"
+    },
+    "Español": {
+        "portal_title": "🔐 Portal Empresarial",
+        "welcome": "Bienvenido",
+        "logout": "Cerrar sesión",
+        "login": "Iniciar sesión",
+        "username": "Usuario",
+        "password": "Contraseña",
+        "billing": "Suscripción y Facturación",
+        "select_plan": "Seleccione su plan",
+        "starter_desc": "Nivel Inicial ($20/mes - S/Ku-Band básica)",
+        "enterprise_desc": "Nivel Enterprise 6G ($150/mes - Banda V y Registros)",
+        "starter_warn": "⚠️ El nivel inicial limita las funciones de la banda V.",
+        "upgrade_btn": "🚀 Actualizar a Enterprise 6G ($150/mes)",
+        "upgrade_success": "¡Actualización simulada con éxito!",
+        "active_prem": "🌟 ¡Enterprise 6G Premium Activo ($150/mes)!",
+        "cognitive_weather": "📡 Espectro Cognitivo y Clima",
+        "weather_status": "☀️ Días calurosos por delante: 35°C",
+        "jamming_title": "⚡ Simulador de Interferencias",
+        "inject_jamming": "🚨 Inyectar interferencia / jamming",
+        "parameters": "⚙️ Parámetros de Simulación",
+        "time_steps": "Pasos de tiempo de simulación",
+        "main_title": "🛰️ COSMIC-324: Plataforma NTN y Espectro 6G",
+        "operating_normal": "Bienvenido de nuevo, Ingeniero. Está operando el núcleo avanzado COSMIC-324.",
+        "spectrum_normal": "Estado del espectro (S-Band): Asignación de recursos estable.",
+        "spectrum_jammed": "⚠️ ¡ALERTA: Interferencia detectada! Redireccionando a banda V segura.",
+        "kpi_title": "📌 KPIs Empresariales y Telemetría",
+        "avg_latency": "Latencia Promedio",
+        "throughput": "Rendimiento Est.",
+        "handovers": "Handover Ejecutados",
+        "efficiency": "Eficiencia del Enlace de Constelación",
+        "latency_dynamics": "Dinámica de Latencia",
+        "handover_top": "Topología de Handover",
+        "telemetry": "📊 Reporte de Telemetría en Vivo",
+        "step": "Paso",
+        "status": "Estado",
+        "active_link": "Enlace Activo",
+        "export_btn": "📥 Exportar Reporte (CSV)",
+        "system_logs": "🖥️ Registros de Eventos en Tiempo Real"
+    },
+    "Deutsch": {
+        "portal_title": "🔐 Unternehmensportal",
+        "welcome": "Willkommen",
+        "logout": "Abmelden",
+        "login": "Anmelden",
+        "username": "Benutzername",
+        "password": "Passwort",
+        "billing": "Abonnement & Abrechnung",
+        "select_plan": "Wählen Sie Ihren Plan",
+        "starter_desc": "Starter-Stufe ($20/Monat - Basis S/Ku-Band)",
+        "enterprise_desc": "Enterprise 6G-Stufe ($150/Monat - V-Band & Protokolle)",
+        "starter_warn": "⚠️ Starter-Stufe limitiert V-Band Funktionen.",
+        "upgrade_btn": "🚀 Auf Enterprise 6G upgraden ($150/Mo)",
+        "upgrade_success": "Upgrade erfolgreich simuliert!",
+        "active_prem": "🌟 Premium Enterprise 6G Aktiv ($150/Mo)!",
+        "cognitive_weather": "📡 Kognitives Spektrum & Wetter",
+        "weather_status": "☀️ Heiße Tage voraus: 35°C",
+        "jamming_title": "⚡ Spektrum-Jamming-Simulator",
+        "inject_jamming": "🚨 Absichtliches Jamming / Interferenz injizieren",
+        "parameters": "⚙️ Simulationsparameter",
+        "time_steps": "Simulationszeitschritte",
+        "main_title": "🛰️ COSMIC-324: Next-Gen NTN & 6G Spektrumplattform",
+        "operating_normal": "Willkommen zurück, Ingenieur. Sie bedienen den erweiterten COSMIC-324 Kern.",
+        "spectrum_normal": "Spektrumsstatus (S-Band): Ressourcenzuweisung stabil.",
+        "spectrum_jammed": "⚠️ WARNUNG: Jamming erkannt! Umleitung zu sicheren V-Band Frequenzen.",
+        "kpi_title": "📌 Erweiterte KPIs & Telemetrie",
+        "avg_latency": "Durchschn. Latenz",
+        "throughput": "Geschätzter Durchsatz",
+        "handovers": "Ausgeführte Handovers",
+        "efficiency": "Konstellations-Link-Integrität",
+        "latency_dynamics": "Latenzdynamik",
+        "handover_top": "Handover-Topologie",
+        "telemetry": "📊 Live-Telemetriebericht",
+        "step": "Schritt",
+        "status": "Status",
+        "active_link": "Aktiver Link",
+        "export_btn": "📥 Telemetriebericht exportieren (CSV)",
+        "system_logs": "🖥️ Echtzeit-Systemereignisprotokolle"
+    },
+    "Français": {
+        "portal_title": "🔐 Portail d'Entreprise",
+        "welcome": "Bienvenue",
+        "logout": "Déconnexion",
+        "login": "Connexion",
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "billing": "Abonnement et Facturation",
+        "select_plan": "Sélectionnez votre forfait",
+        "starter_desc": "Niveau Starter ($20/mois - S/Ku-Band de base)",
+        "enterprise_desc": "Niveau Enterprise 6G ($150/mois - Bande V & Journaux)",
+        "starter_warn": "⚠️ Le niveau Starter limite les fonctionnalités de la bande V.",
+        "upgrade_btn": "🚀 Passer à Enterprise 6G ($150/mois)",
+        "upgrade_success": "Mise à niveau simulée avec succès !",
+        "active_prem": "🌟 Premium Enterprise 6G Actif ($150/mois)!",
+        "cognitive_weather": "📡 Spectre Cognitif et Météo",
+        "weather_status": "☀️ Jours chauds à venir : 35°C",
+        "jamming_title": "⚡ Simulateur de Brouillage",
+        "inject_jamming": "🚨 Injecter un brouillage intentionnel",
+        "parameters": "⚙️ Paramètres de Simulation",
+        "time_steps": "Étapes de temps de simulation",
+        "main_title": "🛰️ COSMIC-324 : Plateforme NTN et Spectre 6G",
+        "operating_normal": "Bon retour, Ingénieur. Vous utilisez le noyau avancé COSMIC-324.",
+        "spectrum_normal": "État du spectre (S-Band) : Allocation des ressources stable.",
+        "spectrum_jammed": "⚠️ ALERTE : Brouillage détecté ! Redirection vers les fréquences V-Band sécurisées.",
+        "kpi_title": "📌 KPIs et Télémétrie d'Entreprise",
+        "avg_latency": "Latence Moyenne",
+        "throughput": "Débit Estimé",
+        "handovers": "Handovers Exécutés",
+        "efficiency": "Intégrité et Efficacité du Lien",
+        "latency_dynamics": "Dynamique de Latence",
+        "handover_top": "Topologie de Handover",
+        "telemetry": "📊 Rapport de Télémétrie en Direct",
+        "step": "Étape",
+        "status": "Statut",
+        "active_link": "Lien Actif",
+        "export_btn": "📥 Exporter le Rapport (CSV)",
+        "system_logs": "🖥️ Journaux d'Événements Système en Temps Réel"
     }
 }
 
-# 🌍 اختيار اللغة من الشريط الجانبي
-selected_lang = st.sidebar.selectbox("🌐 Choose Language / اختر اللغة", ["English", "العربية"])
+# 🌍 اختيار اللغة الخماسي من الشريط الجانبي
+selected_lang = st.sidebar.selectbox("🌐 Choose Language / اختر اللغة", ["English", "العربية", "Español", "Deutsch", "Français"])
 t = translations[selected_lang]
 
 # الشريط الجانبي لتسجيل الدخول والحماية
@@ -128,7 +245,7 @@ user_tier = st.sidebar.selectbox(t["select_plan"], [
     t["enterprise_desc"]
 ])
 
-if "Starter" in user_tier or "الباقة الأساسية" in user_tier:
+if "Starter" in user_tier or "Nivel Inicial" in user_tier or "Starter-Stufe" in user_tier or "Niveau Starter" in user_tier or "الباقة الأساسية" in user_tier:
     st.sidebar.warning(t["starter_warn"])
     if st.sidebar.button(t["upgrade_btn"]):
         st.sidebar.success(t["upgrade_success"])
@@ -141,7 +258,7 @@ st.sidebar.markdown("---")
 st.sidebar.header(t["cognitive_weather"])
 st.sidebar.info(t["weather_status"])
 
-# ⚡ قسم محاكي التشويش الطيفي الجديد (الأولوية الثالثة)
+# ⚡ قسم محاكي التشويش الطيفي
 st.sidebar.markdown("---")
 st.sidebar.header(t["jamming_title"])
 is_jammed = st.sidebar.checkbox(t["inject_jamming"], value=False)
