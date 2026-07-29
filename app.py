@@ -1,15 +1,16 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import datetime
 
 # إعدادات الصفحة الأساسية
 st.set_page_config(
-    page_title="COSMIC-324 LEO Simulator",
+    page_title="COSMIC-324 Next-Gen NTN & 6G Platform",
     page_icon="🛰️",
     layout="wide"
 )
 
-# 🌐 نظام اللغات الموسع
+# 🌐 نظام اللغات الشامل
 translations = {
     "English": {
         "portal_title": "🔐 Enterprise Portal",
@@ -26,7 +27,9 @@ translations = {
         "upgrade_btn": "🚀 Upgrade to Enterprise 6G ($150/mo)",
         "upgrade_success": "Upgrade simulated successfully!",
         "active_prem": "🌟 Premium Enterprise 6G Active ($150/mo)!",
-        "parameters": "📡 Parameters",
+        "cognitive_weather": "📡 Cognitive Spectrum & Weather",
+        "weather_status": "☀️ Hot days ahead: 35°C",
+        "parameters": "⚙️ Simulation Parameters",
         "time_steps": "Simulation Time Steps",
         "main_title": "🛰️ COSMIC-324: Next-Gen NTN & 6G Spectrum Platform",
         "operating_normal": "Welcome back, Engineer. You are operating the advanced COSMIC-324 core, featuring cognitive multi-band allocation.",
@@ -41,7 +44,9 @@ translations = {
         "telemetry": "📊 Live Telemetry Report",
         "step": "Step",
         "status": "Status",
-        "active_link": "Active Link"
+        "active_link": "Active Link",
+        "export_btn": "📥 Export Telemetry Report (CSV)",
+        "system_logs": "🖥️ Real-Time System Event Logs"
     },
     "العربية": {
         "portal_title": "🔐 بوابة المؤسسة",
@@ -58,7 +63,9 @@ translations = {
         "upgrade_btn": "🚀 الترقية إلى المؤسسات 6G ($150/شهرياً)",
         "upgrade_success": "تمت محاكاة الترقية بنجاح!",
         "active_prem": "🌟 باقة المؤسسات 6G المميزة مفعلة ($150/شهرياً)!",
-        "parameters": "📡 المعلمات والخصائص",
+        "cognitive_weather": "📡 الطيف المعرفي والطقس الفضائي",
+        "weather_status": "☀️ أيام حارة قادمة: 35°C",
+        "parameters": "⚙️ معلمات المحاكاة",
         "time_steps": "خطوات محاكاة الوقت",
         "main_title": "🛰️ COSMIC-324: منصة طيف الجيل السادس والأقمار الصناعية",
         "operating_normal": "أهلاً بعودتك، مهندس. أنت تشغل نواة COSMIC-324 المتقدمة مع التخصيص المعرفي متعدد النطاقات.",
@@ -73,7 +80,9 @@ translations = {
         "telemetry": "📊 تقرير القياس عن بعد المباشر",
         "step": "الخطوة",
         "status": "الحالة",
-        "active_link": "رابط نشط"
+        "active_link": "رابط نشط",
+        "export_btn": "📥 تصدير تقرير القياس (CSV)",
+        "system_logs": "🖥️ سجل أحداث النظام الحية"
     }
 }
 
@@ -121,6 +130,12 @@ else:
     st.sidebar.success(t["active_prem"])
 
 st.sidebar.markdown("---")
+
+# ☀️ قسم الطيف المعرفي والطقس في الشريط الجانبي
+st.sidebar.header(t["cognitive_weather"])
+st.sidebar.info(t["weather_status"])
+
+st.sidebar.markdown("---")
 st.sidebar.header(t["parameters"])
 time_steps = st.sidebar.slider(t["time_steps"], 5, 20, 10)
 
@@ -143,7 +158,7 @@ with col3:
 
 st.progress(88, text=t["efficiency"])
 
-# قسم الرسوم والمخططات
+# قسم الرسوم والمخططات الديناميكية
 col_a, col_b = st.columns(2)
 with col_a:
     st.subheader(t["latency_dynamics"])
@@ -164,3 +179,26 @@ df = pd.DataFrame({
 
 st.subheader(t["telemetry"])
 st.dataframe(df, use_container_width=True)
+
+# 📥 زر تصدير البيانات (CSV)
+csv_data = df.to_csv(index=False).encode('utf-8')
+st.download_button(
+    label=t["export_btn"],
+    data=csv_data,
+    file_name='cosmic_324_telemetry_report.csv',
+    mime='text/csv',
+)
+
+st.markdown("---")
+
+# 🖥️ سجل أحداث النظام الحية (Real-Time System Event Logs)
+st.subheader(t["system_logs"])
+current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+log_container = st.container()
+with log_container:
+    st.code(f"""
+[{current_time}] [INFO] COSMIC-324 Core initialized successfully.
+[{current_time}] [INFO] User authenticated: {st.session_state.username} | Active Tier: {user_tier}
+[{current_time}] [SUCCESS] Cognitive Multi-Band Allocation active on S-Band & Ku-Band.
+[{current_time}] [MONITOR] Telemetry stream stable. Zero packet loss detected across {time_steps} steps.
+    """, language="text")
